@@ -10,6 +10,12 @@
   src:url("../fonts/DotGothic16-Regular.woff2") format("woff2");
   font-weight:normal; font-style:normal; font-display:swap;
 }
+/* Arimo Bold (Apache 2.0, Steve Matteson) — square corporate sans for the brand wordmark */
+@font-face{
+  font-family:"Arimo";
+  src:url("../fonts/Arimo-Bold.woff2") format("woff2");
+  font-weight:bold; font-style:normal; font-display:swap;
+}
 :root{
   --cell: 48px; /* FIXED design cell — the whole calc scales uniformly, so proportions never drift */
   /* ---- theme variables (overridden per theme below) ---- */
@@ -84,9 +90,9 @@ body{
 .brand{display:flex; align-items:center; gap:8px;}
 .mascot{width:44px; height:44px; filter:drop-shadow(0 2px 2px rgba(0,0,0,.3));}
 .brand-name{
-  font-size:34px; font-weight:800; letter-spacing:1px; color:var(--brand);
+  font-family:"Arimo","Avenir Next","Segoe UI",sans-serif;
+  font-size:32px; font-weight:bold; letter-spacing:2px; color:var(--brand);
   text-shadow:0 1px 0 rgba(255,255,255,.35), 0 -1px 1px rgba(0,0,0,.25);
-  font-style:italic;
 }
 .solar{
   position:relative;
@@ -98,16 +104,24 @@ body{
   box-shadow:inset 0 2px 5px rgba(0,0,0,.6), 0 1px 0 rgba(255,255,255,.25);
   border:1px solid #241a14;
 }
+/* chain readout: bare LED — no background, no border, bright red pixel type */
 .chain-badge{
-  position:absolute; right:8px; top:50%; transform:translateY(-50%);
-  display:flex; align-items:center; gap:6px;
-  background:rgba(8,6,4,.6); border:1px solid rgba(255,179,71,.45); border-radius:6px;
-  padding:3px 8px; color:#ffb347; white-space:nowrap;
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  white-space:nowrap;
 }
-.chain-badge span{font-size:9px; letter-spacing:2px; font-weight:700; opacity:.85;}
-.chain-badge b{font-family:"DotGothic16","Courier New",monospace; font-weight:normal; font-size:19px; text-shadow:0 0 8px rgba(255,179,71,.7);}
-.chain-badge.mega{animation:megapulse .45s ease-in-out 4; border-color:#ffd76a;}
-@keyframes megapulse{50%{transform:translateY(-50%) scale(1.28); box-shadow:0 0 20px rgba(255,215,106,.95);}}
+.chain-badge span{
+  font-family:"DotGothic16","Courier New",monospace;
+  font-size:12px; letter-spacing:3px; padding-left:3px; color:#ff2e1f;
+  text-shadow:0 0 8px rgba(255,46,31,.7);
+}
+.chain-badge b{
+  font-family:"DotGothic16","Courier New",monospace; font-weight:normal;
+  font-size:27px; color:#ff2e1f;
+  text-shadow:0 0 10px rgba(255,46,31,.8);
+}
+.chain-badge.mega{animation:megapulse .45s ease-in-out 4;}
+@keyframes megapulse{50%{transform:scale(1.22); filter:brightness(1.35);}}
 .lcd.celebrate{animation:lcdflash 1s ease-out;}
 @keyframes lcdflash{0%{box-shadow:inset 0 0 0 5px rgba(255,215,106,.95);}100%{box-shadow:inset 0 3px 14px rgba(43,58,46,.35);}}
 

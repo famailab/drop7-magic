@@ -353,16 +353,17 @@ body{
 /* ---------- wallpaper (behind everything in the LCD) ---------- */
 .wallpaper{
   position:absolute; inset:0; z-index:0; pointer-events:none;
-  background-size:cover; background-position:center; background-repeat:no-repeat;
+  background-repeat:repeat; /* presets tile; custom uploads override below */
   opacity:.7;
 }
-/* custom uploads are stylized: B&W, pixelated, and screen-blended so the
-   LCD base color stays the darkest tone — dark pixels melt into the
-   background, light pixels glow through as texture */
+/* custom uploads are stylized: B&W, pixelated, auto-leveled for punch, and
+   screen-blended so the LCD base color stays the darkest tone — dark pixels
+   melt into the background, light pixels glow through as texture */
 .wallpaper.custom{
-  filter:grayscale(1) contrast(.5) brightness(1.25);
+  background-size:cover; background-position:center; background-repeat:no-repeat;
+  filter:grayscale(1) brightness(1.05);
   mix-blend-mode:screen;
-  opacity:.7; image-rendering:pixelated;
+  opacity:.8; image-rendering:pixelated;
 }
 
 /* ---------- settings ---------- */

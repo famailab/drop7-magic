@@ -1052,6 +1052,27 @@ function setWallpaperCustom(dataUrl){
   const s = getSettings(); s.wallpaper = "custom"; s.wallpaperData = dataUrl; saveSettings(s);
   applyWallpaper();
 }
+/* auto-levels: remap the 2nd–98th percentile of luma to 0–255 so even a flat
+   or dark photo gets full tonal range (dark end melts into the LCD via
+   screen blend, bright end glows). Pure function over ImageData — tested. */
+function autoLevels(cx, W, H){
+  const id = cx.getImageData(0, 0, W, H), d = id.data;
+  const hist = new Array(256).fill(0);
+  for(let i=0;i<d.length;i+=4) hist[((d[i]*3 + d[i+1]*6 + d[i+2])/10)|0]++;
+  const total = W*H;
+  let acc = 0, lo = 0, hi = 255;
+  for(let i=0;i<256;i++){ acc += hist[i]; if(acc > total*0.02){ lo = i; break; } }
+  acc = 0;
+  for(let i=255;i>=0;i--){ acc += hist[i]; if(acc > total*0.02){ hi = i; break; } }
+  if(hi-lo < 24){ lo = Math.max(0, lo-12); hi = Math.min(255, hi+12); } // flat image: don't over-stretch noise
+  const range = Math.max(1, hi-lo);
+  for(let i=0;i<d.length;i+=4) for(let k=0;k<3;k++){
+    const v = (d[i+k]-lo)*255/range;
+    d[i+k] = v<0 ? 0 : v>255 ? 255 : v;
+  }
+  cx.putImageData(id, 0, 0);
+  return { lo, hi };
+}
 function applyBrand(){
   const s = getSettings();
   const name = String(s.brand || "CaLBoY").slice(0,14) || "CaLBoY";
@@ -1102,7 +1123,9 @@ function bindSettings(){
       URL.revokeObjectURL(img.src);
       const W = 120, H = Math.max(1, Math.round(120*img.height/img.width));
       const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
-      cv.getContext("2d").drawImage(img, 0, 0, W, H);
+      const cx = cv.getContext("2d");
+      cx.drawImage(img, 0, 0, W, H);
+      autoLevels(cx, W, H); // stretch p2–p98 to full range: any photo gets punch
       setWallpaperCustom(cv.toDataURL("image/jpeg", 0.72));
       Sfx.click();
     };

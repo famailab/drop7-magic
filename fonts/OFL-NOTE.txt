@@ -1,0 +1,4 @@
+Fonts in this folder:
+- DSEG7Classic-Bold.woff2 : DSEG (c) keshikan, SIL Open Font License 1.1 (see DSEG-LICENSE.txt)
+- DotGothic16-Regular.woff2 : DotGothic16 (c) Fontworks, SIL Open Font License 1.1 (https://scripts.sil.org/OFL)
+Both are free to use, embed and redistribute under the OFL.

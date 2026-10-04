@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#23262b">
+<title>Drop 7 Magic — Retro Calculator Puzzle</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%2322252a' stroke='%2314161a' stroke-width='4'/%3E%3Ctext x='32' y='43' font-size='30' font-family='sans-serif' font-weight='bold' fill='%23f4f1e6' text-anchor='middle'%3E7%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="page">
+  <div class="calc" id="calc">
+    <!-- top: brand + solar -->
+    <div class="calc-top">
+      <div class="brand">
+        <svg class="mascot" viewBox="0 0 64 64" aria-hidden="true">
+          <ellipse cx="32" cy="16" rx="24" ry="7" fill="#8a5a2b"/>
+          <path d="M18 16c0-8 6-13 14-13s14 5 14 13z" fill="#a06a35"/>
+          <rect x="18" y="12" width="28" height="5" rx="2" fill="#5c3a1a"/>
+          <rect x="20" y="22" width="24" height="30" rx="5" fill="#e8e4d8" stroke="#3a3d42" stroke-width="2.5"/>
+          <rect x="25" y="27" width="14" height="9" rx="2" fill="#bcd9c2" stroke="#3a3d42" stroke-width="2"/>
+          <circle cx="26" cy="44" r="2.4" fill="#3a3d42"/><circle cx="32" cy="44" r="2.4" fill="#3a3d42"/><circle cx="38" cy="44" r="2.4" fill="#3a3d42"/>
+        </svg>
+        <span class="brand-name">CaLBoY</span>
+      </div>
+      <div class="solar" aria-hidden="true"><div class="chain-badge hidden" id="chain-badge"><span>CHAIN</span><b id="chain-num">x2</b></div></div>
+    </div>
+
+    <!-- LCD -->
+    <div class="lcd-bezel">
+      <div class="lcd" id="lcd">
+        <div class="halftone" id="halftone" aria-hidden="true"></div>
+        <div class="scanlines" aria-hidden="true"></div>
+
+        <!-- TITLE -->
+        <section class="screen" id="screen-title">
+          <div class="title-logo">
+            <div class="title-drop">DROP 7</div>
+            <div class="title-magic">MAGIC</div>
+          </div>
+          <div class="title-btns">
+            <button class="lcd-btn primary hidden" id="btn-continue">CONTINUE</button>
+            <button class="lcd-btn primary" id="btn-new">NEW GAME</button>
+            <button class="lcd-btn" id="btn-tutorial">TUTORIAL</button>
+            <button class="lcd-btn" id="btn-how">HOW TO PLAY</button>
+          </div>
+          <div class="title-scores">
+            <div class="ts-head">— BEST SCORES —</div>
+            <ol id="title-top5"></ol>
+          </div>
+          <div class="title-foot">v1.0 · a retro calculator puzzle</div>
+        </section>
+
+        <!-- GAME -->
+        <section class="screen hidden" id="screen-game">
+          <div class="preview-zone" id="preview-zone">
+            <div class="magic-hint hidden" id="magic-hint"><b id="magic-name"></b><span id="magic-desc"></span></div>
+            <div class="cradle"><div class="disc" id="preview-disc"><div class="face"><span></span></div></div></div>
+          </div>
+          <div class="board-wrap" id="board-wrap">
+            <div class="aim" id="aim">▼</div>
+            <div class="tut-arrow hidden" id="tut-arrow">↓</div>
+            <div class="board" id="board"></div>
+            <div class="colhi" id="colhi"></div>
+            <div class="ghost hidden" id="ghost"><div class="face"><span></span></div></div>
+          </div>
+          <div class="hud">
+            <div class="hud-cell"><label>BALLS</label><div class="seg" id="hud-balls">5</div></div>
+            <div class="hud-cell"><label>SCORE</label><div class="seg big" id="hud-score">0</div></div>
+            <div class="hud-cell"><label>LEVEL</label><div class="seg" id="hud-level">1</div></div>
+          </div>
+        </section>
+
+        <!-- GAME OVER -->
+        <section class="screen hidden" id="screen-over">
+          <div class="over-title">GAME OVER</div>
+          <div class="newbest hidden" id="newbest">★ NEW BEST ★</div>
+          <div class="over-score"><label>SCORE</label><div class="seg huge" id="over-score">0</div></div>
+          <div class="over-stats">
+            <div><label>TIME</label><div class="seg" id="over-time">0:00</div></div>
+            <div><label>LEVEL</label><div class="seg" id="over-level">1</div></div>
+          </div>
+          <div class="title-scores">
+            <div class="ts-head">— BEST SCORES —</div>
+            <ol id="over-top5"></ol>
+          </div>
+          <div class="title-btns">
+            <button class="lcd-btn primary" id="btn-again">PLAY AGAIN</button>
+            <button class="lcd-btn" id="btn-menu2">MENU</button>
+          </div>
+        </section>
+
+        <!-- HELP -->
+        <section class="screen hidden" id="screen-help">
+          <div class="help-page" data-p="0">
+            <div class="help-title">HOW TO PLAY</div>
+            <ul class="help-list">
+              <li><b>Drop</b> discs into the 7 columns — tap, drag, or use ← → + <b>Space</b>.</li>
+              <li>A disc <b>pops</b> when its number matches the number of discs in its row <i>or</i> column.</li>
+              <li><b>Chains</b> multiply points: 7 pts × chain per disc.</li>
+              <li><b>Gray discs</b> are blanks. When a disc pops next to one, it <b>cracks</b> — a second neighboring pop <b>reveals a hidden number</b>, turning it into a normal disc!</li>
+              <li>You get <b>5 discs per level</b>. When they run out, the board rises and a cracked row appears at the bottom.</li>
+              <li><b>Combos earn bonus discs</b> — the first pop of a turn earns nothing, but every chain wave from <b>×2</b> on grants <b>+1 disc</b>! Magic drops end the level, but a big combo can earn it back.</li>
+              <li>Clear the <b>whole board</b> for a fireworks celebration!</li>
+              <li><b>Game over</b> when a disc is pushed above the top — or when the board is completely full and the next disc has nowhere to drop.</li>
+            </ul>
+          </div>
+          <div class="help-page hidden" data-p="1">
+            <div class="help-title">MAGIC BALLS</div>
+            <ul class="help-list">
+              <li>Glowing <b>magic balls</b> sometimes appear as your next ball. Each is <b>consumed</b> when dropped — and dropping one <b>ends the level immediately</b>!</li>
+              <li><b>± SHIFT</b> — adds <b>−3…+3</b> to <i>every</i> numbered ball (set by column, left to right). Numbers stay within 1–7.</li>
+              <li><b>👀 PEEK</b> — reveals the <b>hidden numbers</b> of every blank in the chosen column. Slide to peek first!</li>
+              <li><b>⟳ CYCLE</b> — sliding ←/→ cycles <i>every</i> ball: blank → cracked → numbered → blank. Drop to lock it in.</li>
+              <li><b>◉ UNIFY</b> — turns <i>every</i> numbered ball into <b>one</b> number — pick 1–7 with the highlight column.</li>
+            </ul>
+          </div>
+          <div class="help-nav">
+            <button class="lcd-btn small" id="help-prev">◀</button>
+            <span class="help-dots" id="help-dots">●○</span>
+            <button class="lcd-btn small" id="help-next">▶</button>
+          </div>
+          <div class="title-btns"><button class="lcd-btn primary" id="btn-help-back">GOT IT</button></div>
+        </section>
+
+        <!-- overlays -->
+        <div class="tutbar hidden" id="tutbar">
+          <div class="tut-text" id="tut-text"></div>
+          <div class="tut-btns">
+            <button class="lcd-btn small" id="tut-hide">HIDE ▾</button>
+            <button class="lcd-btn small" id="tut-skip">SKIP</button>
+            <button class="lcd-btn small primary" id="tut-next">NEXT →</button>
+          </div>
+        </div>
+        <div class="pauseveil hidden" id="pauseveil">
+          <div class="pause-box">
+            <div class="pause-title">PAUSED</div>
+            <div class="title-btns">
+              <button class="lcd-btn primary" id="btn-resume">RESUME</button>
+              <button class="lcd-btn" id="btn-restart">RESTART</button>
+              <button class="lcd-btn" id="btn-help2">HOW TO PLAY</button>
+              <button class="lcd-btn" id="btn-quit">QUIT TO MENU</button>
+            </div>
+          </div>
+        </div>
+        <div class="toast hidden" id="toast"></div>
+        <canvas class="fx hidden" id="fx"></canvas>
+      </div>
+      <div class="bezel-label">DROP 7 MAGIC</div>
+    </div>
+
+    <!-- physical buttons -->
+    <div class="pad">
+      <button class="key" id="key-home" aria-label="Home" title="Menu">
+        <svg viewBox="0 0 24 24"><path d="M12 3l9 8h-3v9h-4v-6H10v6H6v-9H3z" fill="currentColor"/></svg>
+      </button>
+      <button class="key" id="key-pause" aria-label="Pause" title="Pause (P)">
+        <svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/></svg>
+      </button>
+      <button class="key" id="key-sound" aria-label="Sound" title="Mute (M)">
+        <svg viewBox="0 0 24 24" id="ico-snd-on"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8a5 5 0 010 8M18.5 5.5a9 9 0 010 13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+        <svg viewBox="0 0 24 24" id="ico-snd-off" class="hidden"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 9l6 6M22 9l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <button class="key" id="key-help" aria-label="Help" title="How to play (H)">
+        <svg viewBox="0 0 24 24"><path d="M12 2a8 8 0 00-8 8h3a5 5 0 015-5 5 5 0 015 5c0 3.5-2.5 4-4 5.5-.6.6-1 1.2-1 2.5h-3c0-2 .8-3 1.7-3.9C12.4 12.6 14 11.7 14 10a2 2 0 10-4 0H7a5 5 0 015-5" fill="currentColor"/><circle cx="10.5" cy="19" r="1.8" fill="currentColor"/></svg>
+      </button>
+    </div>
+    <div class="kbd-hint">← → select column · <b>Space</b> drop · <b>P</b> pause · <b>M</b> mute</div>
+  </div>
+</div>
+<script src="js/audio.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>

@@ -1007,19 +1007,23 @@ const THEMES = [
 const WALLPAPERS = [
   { id:"none", name:"CLEAR", css:"" },                                     // pure solid LCD color
   { id:"dots", name:"DOTS", css:                                           // white dot grid, fading downward
-    "background-image:radial-gradient(circle, rgba(255,255,255,.55) 1.6px, transparent 1.7px);" +
-    "background-size:20px 20px;" +
+    "background-image:radial-gradient(circle, rgba(255,255,255,.8) 2px, transparent 2.1px);" +
+    "background-size:18px 18px;" +
     "-webkit-mask-image:linear-gradient(180deg,#000 15%,transparent 90%);" +
     "mask-image:linear-gradient(180deg,#000 15%,transparent 90%);" },
   { id:"grid", name:"GRID", css:                                           // chessboard
     "background-image:" +
-    "linear-gradient(45deg, rgba(255,255,255,.22) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.22) 75%)," +
-    "linear-gradient(45deg, rgba(255,255,255,.22) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.22) 75%);" +
-    "background-size:32px 32px;background-position:0 0,16px 16px;" },
-  { id:"waves", name:"WAVES", css:                                        // banknote guilloche
-    'background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'96\' height=\'48\'%3E%3Cg fill=\'none\' stroke=\'rgba(255,255,255,0.32)\' stroke-width=\'1\'%3E%3Cpath d=\'M0 8 Q12 2 24 8 T48 8 T72 8 T96 8\'/%3E%3Cpath d=\'M0 16 Q12 10 24 16 T48 16 T72 16 T96 16\'/%3E%3Cpath d=\'M0 24 Q12 18 24 24 T48 24 T72 24 T96 24\'/%3E%3Cpath d=\'M0 32 Q12 26 24 32 T48 32 T72 32 T96 32\'/%3E%3Cpath d=\'M0 40 Q12 34 24 40 T48 40 T72 40 T96 40\'/%3E%3C/g%3E%3C/svg%3E");' },
+    "linear-gradient(45deg, rgba(255,255,255,.38) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.38) 75%)," +
+    "linear-gradient(45deg, rgba(255,255,255,.38) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.38) 75%);" +
+    "background-size:28px 28px;background-position:0 0,14px 14px;" },
+  { id:"waves", name:"WAVES", css:                                        // banknote guilloche, dense
+    'background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'72\' height=\'36\'%3E%3Cg fill=\'none\' stroke=\'rgba(255,255,255,0.45)\' stroke-width=\'1\'%3E%3Cpath d=\'M0 4 Q9 0 18 4 T36 4 T54 4 T72 4\'/%3E%3Cpath d=\'M0 9 Q9 5 18 9 T36 9 T54 9 T72 9\'/%3E%3Cpath d=\'M0 14 Q9 10 18 14 T36 14 T54 14 T72 14\'/%3E%3Cpath d=\'M0 19 Q9 15 18 19 T36 19 T54 19 T72 19\'/%3E%3Cpath d=\'M0 24 Q9 20 18 24 T36 24 T54 24 T72 24\'/%3E%3Cpath d=\'M0 29 Q9 25 18 29 T36 29 T54 29 T72 29\'/%3E%3Cpath d=\'M0 34 Q9 30 18 34 T36 34 T54 34 T72 34\'/%3E%3C/g%3E%3C/svg%3E");' },
 ];
 const DEFAULT_WALLPAPER = "dots";
+/* swatch previews: strip the fade mask — it would clip the name label under the swatch */
+function previewCSS(css){
+  return css.replace(/-webkit-mask-image\s*:[^;]+;/g,"").replace(/(^|;)\s*mask-image\s*:[^;]+;/g,"$1");
+}
 function getSettings(){ return store.get(LS.settings, {}); }
 function saveSettings(s){ store.set(LS.settings, s); }
 
@@ -1073,8 +1077,8 @@ function buildSettingsUI(){
     WALLPAPERS.forEach(w=>{
       const b = document.createElement("button");
       b.className = "swatch"; b.dataset.id = w.id; b.title = w.name; b.type = "button";
-      b.style.cssText = w.css;             // pattern preview…
-      b.style.backgroundColor = "#e8e4d8"; // …on a light base
+      b.style.cssText = previewCSS(w.css);   // pattern preview (no fade mask)…
+      b.style.backgroundColor = "#e8e4d8";   // …on a light base
       b.innerHTML = `<span class="sw-name">${w.name}</span>`;
       b.onclick = ()=>{ Sfx.click(); const s=getSettings(); s.wallpaper=w.id; s.wallpaperData=null; saveSettings(s); applyWallpaper(); };
       ww.appendChild(b);

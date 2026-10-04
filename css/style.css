@@ -354,7 +354,7 @@ body{
 .wallpaper{
   position:absolute; inset:0; z-index:0; pointer-events:none;
   background-size:cover; background-position:center; background-repeat:no-repeat;
-  opacity:.55;
+  opacity:.7;
 }
 /* custom uploads are stylized: B&W, pixelated, and screen-blended so the
    LCD base color stays the darkest tone — dark pixels melt into the
@@ -362,7 +362,7 @@ body{
 .wallpaper.custom{
   filter:grayscale(1) contrast(.5) brightness(1.25);
   mix-blend-mode:screen;
-  opacity:.55; image-rendering:pixelated;
+  opacity:.7; image-rendering:pixelated;
 }
 
 /* ---------- settings ---------- */

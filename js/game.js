@@ -430,9 +430,27 @@ async function resolveBoard(){
   if(cleared) celebrateClear(megaFired);
 }
 
+/* smart magic spawning: the fuller the board, the more often magic appears
+   (a lifeline when you're cornered); an empty board never gets magic.
+   PEEK is only offered when blanks exist — nothing to reveal otherwise. */
+function boardStats(){
+  let n = 0, blanks = 0;
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+    const o = G.board[r][c];
+    if(o){ n++; if(o.v===0) blanks++; }
+  }
+  return { n, blanks };
+}
+function magicRate(n){
+  if(n===0) return 0;            // empty board: no magic at all
+  const t = Math.min(1, n/42);   // 42+ discs ≈ desperate
+  return 0.03 + 0.27*t*t;        // ~3% sparse, ~10% mid-game, 30% near-full
+}
 function rollNext(level){
-  if(Math.random() < 0.12){
-    const types = ["shift","peek","cycle","unify"];
+  const { n, blanks } = boardStats();
+  if(Math.random() < magicRate(n)){
+    const types = ["shift","cycle","unify"];
+    if(blanks>0) types.push("peek");
     return { magic: types[(Math.random()*types.length)|0], id: discId++ };
   }
   return rollDisc(level);

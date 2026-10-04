@@ -41,7 +41,7 @@ Or drag the folder into Netlify / Vercel / Cloudflare Pages / GitHub Pages.
 ## Features
 
 - Classic Drop 7 rules: 7×7 grid, number = row/column disc count pops, chains ×7 pts (multiplier shown in the solar panel in dot-matrix font; **chain ×7** triggers mega badge + LCD flash + full-screen translucent fireworks + combo jingle)
-- **Magic balls** (~12% of drops, glowing, each with unique style/sound, consumed on drop — dropping one **ends the level immediately**):
+- **Magic balls** (smart spawn: 0% on empty board, ~10% mid-game, 30% when nearly full — a lifeline when cornered; PEEK only offered when blanks exist. Glowing, each with unique style/sound, consumed on drop — dropping one **ends the level immediately**):
   - **± SHIFT** (purple): adds −3…+3 to *every* numbered ball, set by column (clamped 1–7)
   - **👀 PEEK** (teal): reveals the *hidden numbers* of every blank in the chosen column (slide to peek first)
   - **⟳ CYCLE** (orange): sliding ←/→ cycles *every* ball blank → cracked → numbered → blank (numbered balls hide their value inside); drop locks it in

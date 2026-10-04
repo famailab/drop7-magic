@@ -53,7 +53,7 @@ function applyMuteUI(){
 
 /* ---------- screens ---------- */
 function show(id){
-  ["screen-title","screen-game","screen-over","screen-help"].forEach(s => $(s).classList.add("hidden"));
+  ["screen-title","screen-game","screen-over","screen-help","screen-settings"].forEach(s => $(s).classList.add("hidden"));
   $(id).classList.remove("hidden");
   // screens differ in height — refit so the calculator always fits the viewport
   if(typeof fit === "function") requestAnimationFrame(()=>fit());
@@ -290,7 +290,7 @@ function setChainBadge(n){
 /* chain x7 celebration: translucent full-LCD fireworks, board stays visible */
 function fireworks(){
   const cv = $("fx"), lcd = els.lcd;
-  const lr = lcd.getBoundingClientRect(); // displayed px (correct under zoom)
+  const lr = lcd.getBoundingClientRect(); // displayed px (correct under transform scale)
   const W = cv.width = Math.round(lr.width), H = cv.height = Math.round(lr.height);
   if(!W || !H) return;
   cv.classList.remove("hidden");
@@ -961,7 +961,9 @@ function bindInput(){
 }
 function toggleMute(){
   Sfx.setMuted(!Sfx.isMuted());
-  store.set(LS.settings, { muted: Sfx.isMuted() });
+  const s = store.get(LS.settings, {});
+  s.muted = Sfx.isMuted(); // merge — never wipe theme/wallpaper/brand
+  store.set(LS.settings, s);
   applyMuteUI();
   if(!Sfx.isMuted()) Sfx.click();
 }
@@ -1010,17 +1012,135 @@ function closeHelp(){
   else show("screen-title");
 }
 
+/* ================= SETTINGS: theme / wallpaper / brand ================= */
+const THEMES = [
+  { id:"classic", name:"CLASSIC", sw:["#7e848c","#d3ead9"] },
+  { id:"ocean",   name:"OCEAN",   sw:["#446084","#d2e9ec"] },
+  { id:"sunset",  name:"SUNSET",  sw:["#93703f","#f4e8cb"] },
+  { id:"gameboy", name:"GAMEBOY", sw:["#8c8c7e","#a8bd6e"] },
+  { id:"sakura",  name:"SAKURA",  sw:["#b28a98","#f6e2e9"] },
+];
+/* subtle ink-tinted pixel patterns for the LCD wallpaper layer */
+const WALLPAPERS = [
+  { id:"none",  name:"CLEAR", css:"none" },
+  { id:"dots",  name:"DOTS",  css:'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'26\' height=\'26\'%3E%3Ccircle cx=\'13\' cy=\'13\' r=\'2.2\' fill=\'rgba(20,30,25,0.10)\'/%3E%3C/svg%3E")' },
+  { id:"grid",  name:"GRID",  css:'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'34\' height=\'34\'%3E%3Cpath d=\'M34 0H0v34\' fill=\'none\' stroke=\'rgba(20,30,25,0.09)\' stroke-width=\'1.5\'/%3E%3C/svg%3E")' },
+  { id:"waves", name:"WAVES", css:'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'48\' height=\'24\'%3E%3Cpath d=\'M0 12 Q12 4 24 12 T48 12\' fill=\'none\' stroke=\'rgba(20,30,25,0.10)\' stroke-width=\'2\'/%3E%3C/svg%3E")' },
+];
+function getSettings(){ return store.get(LS.settings, {}); }
+function saveSettings(s){ store.set(LS.settings, s); }
+
+function applyTheme(name){
+  if(!THEMES.some(t=>t.id===name)) name = "classic";
+  document.documentElement.dataset.theme = name;
+  const s = getSettings(); s.theme = name; saveSettings(s);
+  updateSettingsUI();
+}
+function applyWallpaper(){
+  const s = getSettings();
+  const name = s.wallpaper || "none";
+  const wp = $("wallpaper");
+  if(!wp) return;
+  wp.classList.toggle("custom", name==="custom");
+  if(name==="custom" && s.wallpaperData) wp.style.backgroundImage = `url(${s.wallpaperData})`;
+  else {
+    const p = WALLPAPERS.find(w=>w.id===name);
+    wp.style.backgroundImage = (p && p.css!=="none") ? p.css : "none";
+  }
+  updateSettingsUI();
+}
+function setWallpaperCustom(dataUrl){
+  const s = getSettings(); s.wallpaper = "custom"; s.wallpaperData = dataUrl; saveSettings(s);
+  applyWallpaper();
+}
+function applyBrand(){
+  const s = getSettings();
+  const name = String(s.brand || "CaLBoY").slice(0,14) || "CaLBoY";
+  const bn = document.querySelector(".brand-name");
+  if(bn) bn.textContent = name;
+  const inp = $("brand-input");
+  if(inp && document.activeElement!==inp) inp.value = name==="CaLBoY" ? "" : name;
+}
+function buildSettingsUI(){
+  const tw = $("theme-swatches");
+  if(tw && !tw.children.length){
+    THEMES.forEach(t=>{
+      const b = document.createElement("button");
+      b.className = "swatch"; b.dataset.id = t.id; b.title = t.name; b.type = "button";
+      b.style.background = `linear-gradient(135deg, ${t.sw[0]} 50%, ${t.sw[1]} 50%)`;
+      b.innerHTML = `<span class="sw-name">${t.name}</span>`;
+      b.onclick = ()=>{ Sfx.click(); applyTheme(t.id); };
+      tw.appendChild(b);
+    });
+  }
+  const ww = $("wp-swatches");
+  if(ww && !ww.children.length){
+    WALLPAPERS.forEach(w=>{
+      const b = document.createElement("button");
+      b.className = "swatch"; b.dataset.id = w.id; b.title = w.name; b.type = "button";
+      b.style.background = "#e8e4d8";
+      if(w.css!=="none") b.style.backgroundImage = w.css;
+      b.innerHTML = `<span class="sw-name">${w.name}</span>`;
+      b.onclick = ()=>{ Sfx.click(); const s=getSettings(); s.wallpaper=w.id; s.wallpaperData=null; saveSettings(s); applyWallpaper(); };
+      ww.appendChild(b);
+    });
+  }
+}
+function updateSettingsUI(){
+  const s = getSettings();
+  document.querySelectorAll("#theme-swatches .swatch").forEach(b=>b.classList.toggle("sel", b.dataset.id===(s.theme||"classic")));
+  document.querySelectorAll("#wp-swatches .swatch").forEach(b=>b.classList.toggle("sel", b.dataset.id===(s.wallpaper||"none")));
+}
+function bindSettings(){
+  $("btn-settings").onclick = ()=>{ Sfx.click(); buildSettingsUI(); updateSettingsUI(); applyBrand(); show("screen-settings"); };
+  $("btn-set-back").onclick = ()=>{ Sfx.click(); show("screen-title"); };
+  // custom wallpaper upload → downscaled to 120px wide (tiny in localStorage),
+  // stylized to B&W translucent low-contrast pixel art via CSS
+  $("wp-file").addEventListener("change", e=>{
+    const f = e.target.files[0]; if(!f) return;
+    const img = new Image();
+    img.onload = ()=>{
+      URL.revokeObjectURL(img.src);
+      const W = 120, H = Math.max(1, Math.round(120*img.height/img.width));
+      const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+      cv.getContext("2d").drawImage(img, 0, 0, W, H);
+      setWallpaperCustom(cv.toDataURL("image/jpeg", 0.72));
+      Sfx.click();
+    };
+    img.src = URL.createObjectURL(f);
+    e.target.value = "";
+  });
+  $("brand-input").addEventListener("input", e=>{
+    const s = getSettings();
+    const v = e.target.value.slice(0,14);
+    if(v.trim()) s.brand = v; else delete s.brand;
+    saveSettings(s); applyBrand();
+  });
+  $("brand-reset").onclick = ()=>{ Sfx.click(); const s=getSettings(); delete s.brand; saveSettings(s); applyBrand(); };
+}
+function applySavedSettings(){
+  const s = getSettings();
+  if(s.theme && THEMES.some(t=>t.id===s.theme)) document.documentElement.dataset.theme = s.theme;
+  applyWallpaper();
+  applyBrand();
+}
+
 /* ---------- boot ---------- */
-/* responsive: scale the whole calculator to fit any viewport (phone/tablet,
-   portrait/landscape) — whichever dimension constrains wins. zoom affects
-   layout, so the page never scrolls and the calc is always fully visible. */
+/* fixed-aspect responsive: the calculator is designed at a fixed 430px width.
+   fit() scales the whole thing uniformly with transform, so proportions,
+   font sizes and grid alignment are identical on every device —
+   whichever dimension constrains wins. */
 function fit(){
   const calc = document.querySelector(".calc");
-  if(!calc) return;
-  calc.style.zoom = 1;
-  const r = calc.getBoundingClientRect();
-  const s = Math.min(window.innerWidth / (r.width + 24), window.innerHeight / (r.height + 24));
-  calc.style.zoom = Math.max(0.4, Math.min(2.2, s));
+  const stage = document.getElementById("stage");
+  if(!calc || !stage) return;
+  const w = calc.offsetWidth, h = calc.offsetHeight; // layout px, transform-independent
+  if(!w || !h) return;
+  const s = Math.min((window.innerWidth - 24) / w, (window.innerHeight - 24) / h);
+  const sc = Math.max(0.35, Math.min(2.5, s));
+  calc.style.transform = `scale(${sc})`;
+  stage.style.width = (w * sc) + "px";
+  stage.style.height = (h * sc) + "px";
   positionTutArrow(); // keep the tutorial arrow glued to its column
 }
 function boot(){
@@ -1028,6 +1148,8 @@ function boot(){
   Sfx.setMuted(!!s.muted);
   applyMuteUI();
   bindInput();
+  bindSettings();
+  applySavedSettings(); // theme / wallpaper / brand
   refreshTitle();
   makeHalftone();
   show("screen-title");

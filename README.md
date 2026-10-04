@@ -54,6 +54,8 @@ Or drag the folder into Netlify / Vercel / Cloudflare Pages / GitHub Pages.
 - Interactive tutorial (CAL the coach): row pop → column pop → chain → blanks → magic → levels
 - Title screen, pause menu, how-to-play, game-over stats, local top-5, timer
 - Continue saved game (localStorage), sound toggle, retro bleeps
+- **Fixed-aspect responsive**: the calculator is designed at a fixed 430px width and scaled uniformly to any screen — identical proportions, font sizes and grid alignment on every device
+- **Settings** (title screen): 5 curated color themes (CLASSIC / OCEAN / SUNSET / GAMEBOY / SAKURA — calculator, balls, LCD and buttons recolor together), LCD wallpapers (CLEAR / DOTS / GRID / WAVES presets + custom image upload, auto-stylized to B&W translucent low-contrast pixel art), and a customizable brand name (default CaLBoY)
 
 ## QA
 

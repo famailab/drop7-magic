@@ -11,10 +11,50 @@
   font-weight:normal; font-style:normal; font-display:swap;
 }
 :root{
-  --cell: clamp(34px, 11.5vw, 52px);
-  --lcd-bg1:#d3ead9; --lcd-bg2:#bcd9c2;
-  --ink:#2b3a2e;
+  --cell: 48px; /* FIXED design cell — the whole calc scales uniformly, so proportions never drift */
+  /* ---- theme variables (overridden per theme below) ---- */
+  --calc1:#9aa0a8; --calc2:#7e848c; --calc3:#585d64; --calc-border:#4a4e55;
+  --brand:#3f444b;
+  --lcd-bg1:#d3ead9; --lcd-bg2:#bcd9c2; --ink:#2b3a2e;
   --disc1:#454a52; --disc2:#22252a;
+  --blank1:#6a7076; --blank2:#43484e;
+  --accent1:#4f7a5c; --accent2:#3a5c44; --accent-border:#2c4634;
+}
+/* OCEAN — deep sea calculator, pale aqua LCD */
+[data-theme="ocean"]{
+  --calc1:#5a7a9c; --calc2:#446084; --calc3:#2c425c; --calc-border:#1e2f42;
+  --brand:#d7e3f0;
+  --lcd-bg1:#d2e9ec; --lcd-bg2:#b2d6da; --ink:#1e3a42;
+  --disc1:#3a5a7c; --disc2:#1d2f45;
+  --blank1:#5f7f92; --blank2:#3c525f;
+  --accent1:#3f8a7d; --accent2:#2c665d; --accent-border:#1f4a44;
+}
+/* SUNSET — warm bronze calculator, cream LCD */
+[data-theme="sunset"]{
+  --calc1:#b08a5e; --calc2:#93703f; --calc3:#6b5233; --calc-border:#4f3d26;
+  --brand:#f2e2c4;
+  --lcd-bg1:#f4e8cb; --lcd-bg2:#e6d3a8; --ink:#4a3423;
+  --disc1:#b25a2b; --disc2:#6e3315;
+  --blank1:#9a7a55; --blank2:#66503a;
+  --accent1:#b06a3c; --accent2:#7e4a2a; --accent-border:#5c331e;
+}
+/* GAMEBOY — dot-matrix monochrome green */
+[data-theme="gameboy"]{
+  --calc1:#a8a898; --calc2:#8c8c7e; --calc3:#6b6b5e; --calc-border:#55554a;
+  --brand:#2a3a7c;
+  --lcd-bg1:#a8bd6e; --lcd-bg2:#8b9f59; --ink:#2a3318;
+  --disc1:#5a6630; --disc2:#2e3518;
+  --blank1:#7d8459; --blank2:#4c5133;
+  --accent1:#8a3040; --accent2:#64222e; --accent-border:#4a1822;
+}
+/* SAKURA — soft pink calculator, blush LCD */
+[data-theme="sakura"]{
+  --calc1:#cfa9b6; --calc2:#b28a98; --calc3:#86636f; --calc-border:#664c56;
+  --brand:#f7e8ee;
+  --lcd-bg1:#f6e2e9; --lcd-bg2:#e9c7d4; --ink:#5c2f3f;
+  --disc1:#7d4c60; --disc2:#4a2a38;
+  --blank1:#a1848f; --blank2:#6d5660;
+  --accent1:#b46a86; --accent2:#875069; --accent-border:#653c4f;
 }
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
 html,body{height:100%;}
@@ -26,21 +66,25 @@ body{
   min-height:100%; padding:12px; user-select:none; -webkit-user-select:none;
 }
 .hidden{display:none !important;}
-.page{width:100%; display:flex; justify-content:center;}
+.page{width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;}
+/* stage gets an explicit scaled size from fit() so flex centering stays exact */
+.stage{position:relative; flex:none;}
 
 /* ---------- calculator body ---------- */
+/* FIXED 430px design width — fit() scales the whole thing with transform,
+   so aspect ratio and grid alignment are identical on every device */
 .calc{
-  width:min(430px, 100%);
-  background:linear-gradient(165deg,#9aa0a8 0%,#7e848c 30%,#6b7078 70%,#585d64 100%);
+  width:430px; flex:none; transform-origin:top left;
+  background:linear-gradient(165deg,var(--calc1) 0%,var(--calc2) 45%,var(--calc3) 100%);
   border-radius:30px; padding:18px 16px 14px;
   box-shadow:0 24px 60px rgba(0,0,0,.55), inset 0 2px 2px rgba(255,255,255,.35), inset 0 -3px 6px rgba(0,0,0,.25);
-  border:1px solid #4a4e55;
+  border:1px solid var(--calc-border);
 }
 .calc-top{display:flex; align-items:center; justify-content:space-between; padding:2px 8px 12px;}
 .brand{display:flex; align-items:center; gap:8px;}
 .mascot{width:44px; height:44px; filter:drop-shadow(0 2px 2px rgba(0,0,0,.3));}
 .brand-name{
-  font-size:34px; font-weight:800; letter-spacing:1px; color:#3f444b;
+  font-size:34px; font-weight:800; letter-spacing:1px; color:var(--brand);
   text-shadow:0 1px 0 rgba(255,255,255,.35), 0 -1px 1px rgba(0,0,0,.25);
   font-style:italic;
 }
@@ -106,8 +150,8 @@ body{
   transition:transform .05s, box-shadow .05s;
 }
 .lcd-btn:active{transform:translateY(3px); box-shadow:0 0 0 #2c2f34;}
-.lcd-btn.primary{background:linear-gradient(180deg,#4f7a5c,#3a5c44); border-color:#2c4634; box-shadow:0 3px 0 #243a2b, 0 5px 8px rgba(0,0,0,.25);}
-.lcd-btn.primary:active{box-shadow:0 0 0 #243a2b;}
+.lcd-btn.primary{background:linear-gradient(180deg,var(--accent1),var(--accent2)); border-color:var(--accent-border); box-shadow:0 3px 0 var(--accent-border), 0 5px 8px rgba(0,0,0,.25);}
+.lcd-btn.primary:active{box-shadow:0 0 0 var(--accent-border);}
 .lcd-btn.small{font-size:12px; padding:8px 14px; width:auto;}
 .title-scores{width:250px; color:var(--ink); margin-top:6px;}
 .ts-head{text-align:center; font-size:12px; letter-spacing:3px; font-weight:700; margin-bottom:6px;}
@@ -185,7 +229,7 @@ body{
   color:#f4f1e6; font-weight:800; font-size:calc(var(--cell)*.42);
   font-family:"Avenir Next","Segoe UI",system-ui,sans-serif;
 }
-.disc.blank .face{background:radial-gradient(circle at 32% 28%, #6a7076, #43484e 72%); border-style:dashed; border-color:#2c2f34;}
+.disc.blank .face{background:radial-gradient(circle at 32% 28%, var(--blank1), var(--blank2) 72%); border-style:dashed; border-color:#2c2f34;}
 .disc.blank .face span{visibility:hidden;}
 .disc.cracked .face{border-color:#8a5a2b; border-style:dashed;}
 .disc.cracked .face::after{
@@ -307,6 +351,44 @@ body{
 .over-score{margin:8px 0; text-align:center;}
 .over-score label, .over-stats label{font-size:11px; letter-spacing:3px; font-weight:700; color:#4a5a4e;}
 .over-stats{display:flex; gap:34px; margin:6px 0 4px; text-align:center;}
+/* ---------- wallpaper (behind everything in the LCD) ---------- */
+.wallpaper{
+  position:absolute; inset:0; z-index:0; pointer-events:none;
+  background-size:cover; background-position:center; background-repeat:no-repeat;
+  opacity:.55;
+}
+/* custom uploads are stylized: B&W, translucent, low contrast, pixelated */
+.wallpaper.custom{
+  filter:grayscale(1) contrast(.6) brightness(1.08);
+  opacity:.3; image-rendering:pixelated;
+}
+
+/* ---------- settings ---------- */
+.set-group{width:100%; max-width:330px; margin:10px 0 4px;}
+.set-label{
+  font-size:12px; letter-spacing:3px; font-weight:800; color:var(--ink);
+  margin-bottom:8px; opacity:.75;
+}
+.swatches{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:6px; padding-bottom:16px;}
+.swatch{
+  width:52px; height:52px; border-radius:12px; cursor:pointer; padding:0;
+  border:3px solid rgba(0,0,0,.25); position:relative; flex:none;
+  box-shadow:0 2px 5px rgba(0,0,0,.25);
+}
+.swatch.sel{border-color:var(--ink); box-shadow:0 0 0 2px var(--lcd-bg1), 0 0 12px rgba(0,0,0,.35);}
+.swatch .sw-name{
+  position:absolute; left:50%; bottom:-19px; transform:translateX(-50%);
+  font-size:9px; letter-spacing:1px; font-weight:700; color:var(--ink); white-space:nowrap;
+}
+.wp-upload{display:inline-block; text-align:center; cursor:pointer; margin-top:2px;}
+.brand-row{display:flex; gap:8px; align-items:center;}
+#brand-input{
+  flex:1; min-width:0; font:inherit; font-weight:700; letter-spacing:1px;
+  color:var(--ink); background:rgba(255,255,255,.35);
+  border:2px solid rgba(0,0,0,.2); border-radius:10px; padding:9px 12px;
+  text-transform:uppercase;
+}
+#brand-input:focus{outline:2px solid var(--ink);}
 .help-title{
   font-family:"DSEG7-Classic",monospace; font-weight:bold; font-size:24px;
   color:var(--ink); margin:14px 0 10px; letter-spacing:2px;
@@ -341,9 +423,3 @@ body{
   text-shadow:0 1px 0 rgba(255,255,255,.25); padding:2px 0 4px; display:none;
 }
 @media (hover:hover) and (pointer:fine){ .kbd-hint{display:block;} }
-
-@media (max-height:760px){
-  .lcd{min-height:500px;}
-  .title-drop{font-size:52px;}
-  :root{--cell:clamp(30px, 10.5vw, 46px);}
-}

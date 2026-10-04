@@ -10,6 +10,7 @@
 </head>
 <body>
 <div class="page">
+ <div class="stage" id="stage">
   <div class="calc" id="calc">
     <!-- top: brand + solar -->
     <div class="calc-top">
@@ -31,6 +32,7 @@
     <div class="lcd-bezel">
       <div class="lcd" id="lcd">
         <div class="halftone" id="halftone" aria-hidden="true"></div>
+        <div class="wallpaper" id="wallpaper" aria-hidden="true"></div>
         <div class="scanlines" aria-hidden="true"></div>
 
         <!-- TITLE -->
@@ -44,6 +46,7 @@
             <button class="lcd-btn primary" id="btn-new">NEW GAME</button>
             <button class="lcd-btn" id="btn-tutorial">TUTORIAL</button>
             <button class="lcd-btn" id="btn-how">HOW TO PLAY</button>
+            <button class="lcd-btn" id="btn-settings">SETTINGS</button>
           </div>
           <div class="title-scores">
             <div class="ts-head">— BEST SCORES —</div>
@@ -104,6 +107,7 @@
               <li><b>Combos earn bonus discs</b> — the first pop of a turn earns nothing, but every chain wave from <b>×2</b> on grants <b>+1 disc</b>! Magic drops end the level, but a big combo can earn it back.</li>
               <li>Clear the <b>whole board</b> for a fireworks celebration!</li>
               <li><b>Game over</b> when a disc is pushed above the top — or when the board is completely full and the next disc has nowhere to drop.</li>
+              <li><b>SETTINGS</b> (title screen): color themes, LCD wallpaper, and your own brand name!</li>
             </ul>
           </div>
           <div class="help-page hidden" data-p="1">
@@ -123,6 +127,29 @@
             <button class="lcd-btn small" id="help-next">▶</button>
           </div>
           <div class="title-btns"><button class="lcd-btn primary" id="btn-help-back">GOT IT</button></div>
+        </section>
+
+        <!-- SETTINGS -->
+        <section class="screen hidden" id="screen-settings">
+          <div class="help-title">SETTINGS</div>
+          <div class="set-group">
+            <div class="set-label">COLOR THEME</div>
+            <div class="swatches" id="theme-swatches"></div>
+          </div>
+          <div class="set-group">
+            <div class="set-label">WALLPAPER</div>
+            <div class="swatches" id="wp-swatches"></div>
+            <label class="lcd-btn small wp-upload" for="wp-file">UPLOAD…</label>
+            <input type="file" id="wp-file" accept="image/*" class="hidden">
+          </div>
+          <div class="set-group">
+            <div class="set-label">BRAND NAME</div>
+            <div class="brand-row">
+              <input id="brand-input" maxlength="14" placeholder="CaLBoY" autocomplete="off">
+              <button class="lcd-btn small" id="brand-reset">RESET</button>
+            </div>
+          </div>
+          <div class="title-btns"><button class="lcd-btn primary" id="btn-set-back">BACK</button></div>
         </section>
 
         <!-- overlays -->
@@ -169,6 +196,7 @@
     </div>
     <div class="kbd-hint">← → select column · <b>Space</b> drop · <b>P</b> pause · <b>M</b> mute</div>
   </div>
+ </div>
 </div>
 <script src="js/audio.js"></script>
 <script src="js/game.js"></script>

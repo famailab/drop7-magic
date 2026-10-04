@@ -98,31 +98,36 @@
           <div class="help-page" data-p="0">
             <div class="help-title">HOW TO PLAY</div>
             <ul class="help-list">
-              <li><b>Drop</b> discs into the 7 columns — tap, drag, or use ← → + <b>Space</b>.</li>
-              <li>A disc <b>pops</b> when its number matches the number of discs in its row <i>or</i> column.</li>
+              <li><b>Drop</b> discs into the 7 columns — tap, drag, or ← → + <b>Space</b>.</li>
+              <li>A disc <b>pops</b> when its number equals the disc count in its row <i>or</i> column.</li>
               <li><b>Chains</b> multiply points: 7 pts × chain per disc.</li>
-              <li><b>Gray discs</b> are blanks. When a disc pops next to one, it <b>cracks</b> — a second neighboring pop <b>reveals a hidden number</b>, turning it into a normal disc!</li>
-              <li>You get <b>5 discs per level</b>. When they run out, the board rises and a cracked row appears at the bottom.</li>
-              <li><b>Combos earn bonus discs</b> — the first pop of a turn earns nothing, but every chain wave from <b>×2</b> on grants <b>+1 disc</b>! Magic drops end the level, but a big combo can earn it back.</li>
-              <li>Clear the <b>whole board</b> for a fireworks celebration!</li>
-              <li><b>Game over</b> when a disc is pushed above the top — or when the board is completely full and the next disc has nowhere to drop.</li>
-              <li><b>SETTINGS</b> (title screen): color themes, LCD wallpaper, and your own brand name!</li>
+              <li><b>Gray discs</b> are blanks — a neighboring pop <b>cracks</b> them, a second one <b>reveals a hidden number</b>!</li>
+              <li>You get <b>5 discs per level</b>. When they run out, the board rises with a fresh cracked row.</li>
+              <li><b>Game over</b> when a disc is pushed above the top — or the board is full with nowhere to drop.</li>
             </ul>
           </div>
           <div class="help-page hidden" data-p="1">
             <div class="help-title">MAGIC BALLS</div>
             <ul class="help-list">
               <li>Glowing <b>magic balls</b> sometimes appear as your next ball. Each is <b>consumed</b> when dropped — and dropping one <b>ends the level immediately</b>!</li>
-              <li>Magic is <b>smart</b>: it shows up more often when the board is crowded (a lifeline!), rarely when the board is empty — and never on an empty board. No blanks around? You won't get PEEK.</li>
-              <li><b>± SHIFT</b> — adds <b>−3…+3</b> to <i>every</i> numbered ball (set by column, left to right). Numbers stay within 1–7.</li>
-              <li><b>👀 PEEK</b> — reveals the <b>hidden numbers</b> of every blank in the chosen column. Slide to peek first!</li>
-              <li><b>⟳ CYCLE</b> — sliding ←/→ cycles <i>every</i> ball: blank → cracked → numbered → blank. Drop to lock it in.</li>
-              <li><b>◉ UNIFY</b> — turns <i>every</i> numbered ball into <b>one</b> number — pick 1–7 with the highlight column.</li>
+              <li>Magic is <b>smart</b>: more often when the board is crowded (a lifeline!), never on an empty board. No blanks around? You won't get PEEK.</li>
+              <li><b>± SHIFT</b> — adds <b>−3…+3</b> to <i>every</i> numbered ball (set by column). Numbers stay 1–7.</li>
+              <li><b>👀 PEEK</b> — reveals the <b>hidden numbers</b> of every blank in the chosen column.</li>
+              <li><b>⟳ CYCLE</b> — slide ←/→ to cycle <i>every</i> ball; drop locks it in.</li>
+              <li><b>◉ UNIFY</b> — turns <i>every</i> numbered ball into <b>one</b> number (pick 1–7).</li>
+            </ul>
+          </div>
+          <div class="help-page hidden" data-p="2">
+            <div class="help-title">BONUS</div>
+            <ul class="help-list">
+              <li><b>Combos earn bonus discs</b> — the first pop of a turn earns nothing, but every chain wave from <b>×2</b> on grants <b>+1 disc</b>!</li>
+              <li>Clear the <b>whole board</b> for a fireworks celebration!</li>
+              <li><b>SETTINGS</b> (title screen): color themes, LCD wallpaper, and your own brand name. Make it yours!</li>
             </ul>
           </div>
           <div class="help-nav">
             <button class="lcd-btn small" id="help-prev">◀</button>
-            <span class="help-dots" id="help-dots">●○</span>
+            <span class="help-dots" id="help-dots">●○○</span>
             <button class="lcd-btn small" id="help-next">▶</button>
           </div>
           <div class="title-btns"><button class="lcd-btn primary" id="btn-help-back">GOT IT</button></div>
@@ -190,7 +195,7 @@
         <svg viewBox="0 0 24 24" id="ico-snd-off" class="hidden"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 9l6 6M22 9l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       </button>
       <button class="key" id="key-help" aria-label="Help" title="How to play (H)">
-        <svg viewBox="0 0 24 24"><path d="M8.5 9.5a3.5 3.5 0 1 1 5.2 3.1c-1.2.7-1.7 1.3-1.7 2.9" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="12" cy="18" r="2" fill="currentColor"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M8.5 9.5a3.5 3.5 0 1 1 5.2 3.1c-1.2.7-1.7 1.3-1.7 2.9" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="10" y="16" width="4" height="4" rx="1" fill="currentColor"/></svg>
       </button>
     </div>
     <div class="kbd-hint">← → select column · <b>Space</b> drop · <b>P</b> pause · <b>M</b> mute</div>

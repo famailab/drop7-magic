@@ -1,5 +1,5 @@
 Fonts in this folder:
 - DSEG7Classic-Bold.woff2 : DSEG (c) keshikan, SIL Open Font License 1.1 (see DSEG-LICENSE.txt)
 - DotGothic16-Regular.woff2 : DotGothic16 (c) Fontworks, SIL Open Font License 1.1 (https://scripts.sil.org/OFL)
-- Arimo-Bold.woff2 : Arimo (c) Steve Matteson, Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+- ChakraPetch-Bold.woff2 : Chakra Petch (c) Cadson Demak, SIL Open Font License 1.1 (https://scripts.sil.org/OFL)
 All are free to use, embed and redistribute under their respective licenses.

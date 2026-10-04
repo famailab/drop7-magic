@@ -123,7 +123,6 @@ body{
   box-shadow:inset 0 3px 14px rgba(43,58,46,.35);
   min-height:560px; display:flex; flex-direction:column;
 }
-.halftone{position:absolute; inset:0; opacity:.5; pointer-events:none;}
 .scanlines{
   position:absolute; inset:0; pointer-events:none; z-index:5; opacity:.5;
   background:repeating-linear-gradient(0deg, rgba(43,58,46,.05) 0 1px, transparent 1px 3px);
@@ -357,10 +356,13 @@ body{
   background-size:cover; background-position:center; background-repeat:no-repeat;
   opacity:.55;
 }
-/* custom uploads are stylized: B&W, translucent, low contrast, pixelated */
+/* custom uploads are stylized: B&W, pixelated, and screen-blended so the
+   LCD base color stays the darkest tone — dark pixels melt into the
+   background, light pixels glow through as texture */
 .wallpaper.custom{
-  filter:grayscale(1) contrast(.6) brightness(1.08);
-  opacity:.3; image-rendering:pixelated;
+  filter:grayscale(1) contrast(.5) brightness(1.25);
+  mix-blend-mode:screen;
+  opacity:.55; image-rendering:pixelated;
 }
 
 /* ---------- settings ---------- */

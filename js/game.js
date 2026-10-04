@@ -9,7 +9,7 @@ let discId = 1;
 let tutSeenMem = false; // in-memory fallback when localStorage is unavailable (private mode)
 const $ = (id) => document.getElementById(id);
 const els = {};
-["lcd","halftone","screen-title","screen-game","screen-over","screen-help","board","board-wrap","colhi",
+["lcd","screen-title","screen-game","screen-over","screen-help","board","board-wrap","colhi",
  "preview-disc","aim","hud-balls","hud-score","hud-level","tutbar","tut-text","tut-next","tut-skip",
  "pauseveil","toast","title-top5","over-top5","over-score","over-time","over-level","newbest",
  "btn-continue","preview-zone"].forEach(id => els[id.replace(/-/g,"_")] = $(id));
@@ -65,22 +65,6 @@ function toast(msg, ms=1400){
   t._h = setTimeout(()=>t.classList.add("hidden"), ms);
 }
 
-/* ---------- halftone backdrop ---------- */
-function makeHalftone(){
-  const W=360,H=560, gap=14, v=(Math.random()*4)|0;
-  let dots="";
-  for(let y=gap/2;y<H;y+=gap) for(let x=gap/2;x<W;x+=gap){
-    let m=0.5;
-    if(v===0) m=0.5+0.5*Math.sin(x/46)*Math.cos(y/52);            // waves
-    else if(v===1){ const dx=x-180,dy=y-280; m=0.5+0.5*Math.cos(Math.sqrt(dx*dx+dy*dy)/34); } // rings
-    else if(v===2) m=0.5+0.5*Math.sin((x+y)/40);                  // diagonal
-    else m=0.5+0.5*Math.sin(x/30)*Math.sin(y/24);                 // cross
-    const r=(1.2+4.4*Math.max(0,Math.min(1,m))).toFixed(1);
-    dots+=`<circle cx="${x}" cy="${y}" r="${r}" fill="rgba(255,255,255,${(0.16+0.5*m).toFixed(2)})"/>`;
-  }
-  els.halftone.innerHTML =
-    `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">${dots}</svg>`;
-}
 
 /* ---------- rendering ---------- */
 function cellPx(){ return els.board.clientWidth / COLS; }
@@ -680,7 +664,6 @@ function newGame(){
   G = newState();
   genStartBoard();
   dealNext(rollNext(1));
-  makeHalftone();
   show("screen-game");
   renderBoard(); renderPreview(); renderHUD();
   setCursor(3, true);
@@ -696,7 +679,6 @@ function continueGame(){
   G.board = s.b.map(row => row.map(x => x ? cell(x.v, x.k|0, x.h|0) : null));
   G.score=s.s; G.level=s.l; G.balls=s.bl; G.time=s.t||0;
   G.next = s.n.mg ? { magic: s.n.mg, id: discId++ } : cell(s.n.v, s.n.k|0, s.n.h|0);
-  makeHalftone();
   show("screen-game");
   renderBoard(); renderPreview(); renderHUD();
   setCursor(s.cu ?? 3, true);
@@ -934,7 +916,7 @@ function bindInput(){
   // title / menu buttons
   $("btn-new").onclick = ()=>{ Sfx.click(); newGame(); };
   $("btn-continue").onclick = ()=>{ Sfx.click(); continueGame(); };
-  $("btn-tutorial").onclick = ()=>{ Sfx.click(); G=newState(); G.next=cell(1); makeHalftone(); show("screen-game"); renderBoard(); renderPreview(); renderHUD(); setCursor(3,true); startTutorial(); };
+  $("btn-tutorial").onclick = ()=>{ Sfx.click(); G=newState(); G.next=cell(1); show("screen-game"); renderBoard(); renderPreview(); renderHUD(); setCursor(3,true); startTutorial(); };
   $("btn-how").onclick = ()=>{ Sfx.click(); openHelp("title"); };
   $("btn-help-back").onclick = ()=>{ Sfx.click(); closeHelp(); };
   $("help-prev").onclick = ()=>{ if(helpPage>0){ Sfx.click(); helpPage--; renderHelpPage(); } };
@@ -1020,13 +1002,24 @@ const THEMES = [
   { id:"gameboy", name:"GAMEBOY", sw:["#8c8c7e","#a8bd6e"] },
   { id:"sakura",  name:"SAKURA",  sw:["#b28a98","#f6e2e9"] },
 ];
-/* subtle ink-tinted pixel patterns for the LCD wallpaper layer */
+/* wallpaper presets — brightness rule: the LCD base color is always the
+   DARKEST tone; patterns only ever brighten (white/light elements). */
 const WALLPAPERS = [
-  { id:"none",  name:"CLEAR", css:"none" },
-  { id:"dots",  name:"DOTS",  css:'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'26\' height=\'26\'%3E%3Ccircle cx=\'13\' cy=\'13\' r=\'2.2\' fill=\'rgba(20,30,25,0.10)\'/%3E%3C/svg%3E")' },
-  { id:"grid",  name:"GRID",  css:'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'34\' height=\'34\'%3E%3Cpath d=\'M34 0H0v34\' fill=\'none\' stroke=\'rgba(20,30,25,0.09)\' stroke-width=\'1.5\'/%3E%3C/svg%3E")' },
-  { id:"waves", name:"WAVES", css:'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'48\' height=\'24\'%3E%3Cpath d=\'M0 12 Q12 4 24 12 T48 12\' fill=\'none\' stroke=\'rgba(20,30,25,0.10)\' stroke-width=\'2\'/%3E%3C/svg%3E")' },
+  { id:"none", name:"CLEAR", css:"" },                                     // pure solid LCD color
+  { id:"dots", name:"DOTS", css:                                           // white dot grid, fading downward
+    "background-image:radial-gradient(circle, rgba(255,255,255,.55) 1.6px, transparent 1.7px);" +
+    "background-size:20px 20px;" +
+    "-webkit-mask-image:linear-gradient(180deg,#000 15%,transparent 90%);" +
+    "mask-image:linear-gradient(180deg,#000 15%,transparent 90%);" },
+  { id:"grid", name:"GRID", css:                                           // chessboard
+    "background-image:" +
+    "linear-gradient(45deg, rgba(255,255,255,.22) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.22) 75%)," +
+    "linear-gradient(45deg, rgba(255,255,255,.22) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.22) 75%);" +
+    "background-size:32px 32px;background-position:0 0,16px 16px;" },
+  { id:"waves", name:"WAVES", css:                                        // banknote guilloche
+    'background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'96\' height=\'48\'%3E%3Cg fill=\'none\' stroke=\'rgba(255,255,255,0.32)\' stroke-width=\'1\'%3E%3Cpath d=\'M0 8 Q12 2 24 8 T48 8 T72 8 T96 8\'/%3E%3Cpath d=\'M0 16 Q12 10 24 16 T48 16 T72 16 T96 16\'/%3E%3Cpath d=\'M0 24 Q12 18 24 24 T48 24 T72 24 T96 24\'/%3E%3Cpath d=\'M0 32 Q12 26 24 32 T48 32 T72 32 T96 32\'/%3E%3Cpath d=\'M0 40 Q12 34 24 40 T48 40 T72 40 T96 40\'/%3E%3C/g%3E%3C/svg%3E");' },
 ];
+const DEFAULT_WALLPAPER = "dots";
 function getSettings(){ return store.get(LS.settings, {}); }
 function saveSettings(s){ store.set(LS.settings, s); }
 
@@ -1038,14 +1031,16 @@ function applyTheme(name){
 }
 function applyWallpaper(){
   const s = getSettings();
-  const name = s.wallpaper || "none";
+  const name = s.wallpaper || DEFAULT_WALLPAPER;
   const wp = $("wallpaper");
   if(!wp) return;
   wp.classList.toggle("custom", name==="custom");
-  if(name==="custom" && s.wallpaperData) wp.style.backgroundImage = `url(${s.wallpaperData})`;
-  else {
-    const p = WALLPAPERS.find(w=>w.id===name);
-    wp.style.backgroundImage = (p && p.css!=="none") ? p.css : "none";
+  if(name==="custom" && s.wallpaperData){
+    wp.style.cssText = ""; // clear any preset mask/pattern first
+    wp.style.backgroundImage = `url(${s.wallpaperData})`;
+  } else {
+    const p = WALLPAPERS.find(w=>w.id===name) || WALLPAPERS[1];
+    wp.style.cssText = p.css; // atomic: replaces pattern, mask, everything
   }
   updateSettingsUI();
 }
@@ -1078,8 +1073,8 @@ function buildSettingsUI(){
     WALLPAPERS.forEach(w=>{
       const b = document.createElement("button");
       b.className = "swatch"; b.dataset.id = w.id; b.title = w.name; b.type = "button";
-      b.style.background = "#e8e4d8";
-      if(w.css!=="none") b.style.backgroundImage = w.css;
+      b.style.cssText = w.css;             // pattern preview…
+      b.style.backgroundColor = "#e8e4d8"; // …on a light base
       b.innerHTML = `<span class="sw-name">${w.name}</span>`;
       b.onclick = ()=>{ Sfx.click(); const s=getSettings(); s.wallpaper=w.id; s.wallpaperData=null; saveSettings(s); applyWallpaper(); };
       ww.appendChild(b);
@@ -1089,7 +1084,7 @@ function buildSettingsUI(){
 function updateSettingsUI(){
   const s = getSettings();
   document.querySelectorAll("#theme-swatches .swatch").forEach(b=>b.classList.toggle("sel", b.dataset.id===(s.theme||"classic")));
-  document.querySelectorAll("#wp-swatches .swatch").forEach(b=>b.classList.toggle("sel", b.dataset.id===(s.wallpaper||"none")));
+  document.querySelectorAll("#wp-swatches .swatch").forEach(b=>b.classList.toggle("sel", b.dataset.id===(s.wallpaper||DEFAULT_WALLPAPER)));
 }
 function bindSettings(){
   $("btn-settings").onclick = ()=>{ Sfx.click(); buildSettingsUI(); updateSettingsUI(); applyBrand(); show("screen-settings"); };
@@ -1151,7 +1146,6 @@ function boot(){
   bindSettings();
   applySavedSettings(); // theme / wallpaper / brand
   refreshTitle();
-  makeHalftone();
   show("screen-title");
   fit();
   window.addEventListener("resize", fit);

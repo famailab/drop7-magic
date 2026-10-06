@@ -940,6 +940,11 @@ function bindInput(){
 
   // first gesture unlocks audio
   window.addEventListener("pointerdown", ()=>Sfx.unlock(), { once:true });
+  // hard touch lock: the page must never move under fingers (backup for the
+  // CSS touch-action/overscroll lock above) — prevents misdrops on touch
+  document.addEventListener("touchmove", e=>e.preventDefault(), {passive:false});
+  document.addEventListener("gesturestart", e=>e.preventDefault()); // iOS pinch zoom
+  document.addEventListener("dblclick", e=>e.preventDefault());     // double-tap zoom
 }
 function toggleMute(){
   Sfx.setMuted(!Sfx.isMuted());
@@ -1049,7 +1054,7 @@ function applyWallpaper(){
   updateSettingsUI();
 }
 function setWallpaperCustom(dataUrl){
-  const s = getSettings(); s.wallpaper = "custom"; s.wallpaperData = dataUrl; saveSettings(s);
+  const s = getSettings(); s.wallpaper = "custom"; s.wallpaperData = dataUrl; s.wpv = 2; saveSettings(s);
   applyWallpaper();
 }
 /* auto-levels: remap the 2nd–98th percentile of luma to 0–255 so even a flat
@@ -1114,19 +1119,19 @@ function updateSettingsUI(){
 function bindSettings(){
   $("btn-settings").onclick = ()=>{ Sfx.click(); buildSettingsUI(); updateSettingsUI(); applyBrand(); show("screen-settings"); };
   $("btn-set-back").onclick = ()=>{ Sfx.click(); show("screen-title"); };
-  // custom wallpaper upload → downscaled to 120px wide (tiny in localStorage),
-  // stylized to B&W translucent low-contrast pixel art via CSS
+  // custom wallpaper upload → 320px wide (detailed, still tiny in localStorage),
+  // auto-leveled, then grayscaled + pixel-block grid via CSS
   $("wp-file").addEventListener("change", e=>{
     const f = e.target.files[0]; if(!f) return;
     const img = new Image();
     img.onload = ()=>{
       URL.revokeObjectURL(img.src);
-      const W = 120, H = Math.max(1, Math.round(120*img.height/img.width));
+      const W = 320, H = Math.max(1, Math.round(320*img.height/img.width));
       const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
       const cx = cv.getContext("2d");
       cx.drawImage(img, 0, 0, W, H);
       autoLevels(cx, W, H); // stretch p2–p98 to full range: any photo gets punch
-      setWallpaperCustom(cv.toDataURL("image/jpeg", 0.72));
+      setWallpaperCustom(cv.toDataURL("image/jpeg", 0.8));
       Sfx.click();
     };
     img.src = URL.createObjectURL(f);
@@ -1142,6 +1147,12 @@ function bindSettings(){
 }
 function applySavedSettings(){
   const s = getSettings();
+  // one-time wallpaper quality migration: uploads before v2 were 120px wide
+  // (too pixelated to salvage) — reset to default so the user re-uploads
+  // at full 320px detail with the new pixel-block grid
+  if(s.wallpaper==="custom" && s.wallpaperData && s.wpv!==2){
+    s.wallpaper = DEFAULT_WALLPAPER; s.wallpaperData = null; s.wpv = 2; saveSettings(s);
+  }
   if(s.theme && THEMES.some(t=>t.id===s.theme)) document.documentElement.dataset.theme = s.theme;
   applyWallpaper();
   applyBrand();

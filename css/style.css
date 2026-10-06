@@ -64,6 +64,17 @@
 }
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
 html,body{height:100%;}
+/* ---------- hard touch lock: the page must never move under fingers ----------
+   no scrolling, panning, pinch-zoom, double-tap zoom or rubber-banding.
+   Nothing in the game scrolls (fixed 430px design, scaled by transform),
+   so this is safe. JS touchmove/gesturestart prevention backs it up. */
+html,body{
+  touch-action:none;
+  overscroll-behavior:none;
+  overflow:hidden;
+  -webkit-user-select:none; user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
 body{
   margin:0; background:#23262b;
   background-image:radial-gradient(120% 90% at 50% 0%, #31353c 0%, #23262b 60%, #191b1f 100%);
@@ -370,14 +381,22 @@ body{
   background-repeat:repeat; /* presets tile; custom uploads override below */
   opacity:.7;
 }
-/* custom uploads are stylized: B&W, pixelated, auto-leveled for punch, and
-   screen-blended so the LCD base color stays the darkest tone — dark pixels
-   melt into the background, light pixels glow through as texture */
+/* custom uploads: high-detail grayscale photo (320px source), screen-blended
+   so the LCD base color stays the darkest tone — dark pixels melt into the
+   background, light pixels glow through as texture. A 7px ink grid on top
+   carves the photo into pixel blocks. */
 .wallpaper.custom{
   background-size:cover; background-position:center; background-repeat:no-repeat;
   filter:grayscale(1) brightness(1.05);
   mix-blend-mode:screen;
-  opacity:.8; image-rendering:pixelated;
+  opacity:.8;
+}
+.wallpaper.custom::after{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(43,58,46,.30) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(43,58,46,.30) 1px, transparent 1px);
+  background-size:7px 7px;
 }
 
 /* ---------- settings ---------- */
